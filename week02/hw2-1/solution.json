@@ -1,0 +1,1 @@
+db.grades.find({score : {$gt : 65}, type : 'exam'}).sort({score : 1}).limit(1)
