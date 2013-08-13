@@ -17,14 +17,10 @@
 
 package course;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
-import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
+import com.mongodb.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class BlogPostDAO {
@@ -39,8 +35,8 @@ public class BlogPostDAO {
 
         DBObject post = null;
         // XXX HW 3.2,  Work Here
-
-
+        BasicDBObject query = new BasicDBObject().append("permalink", permalink);
+        post = postsCollection.findOne(query);
 
         return post;
     }
@@ -52,6 +48,16 @@ public class BlogPostDAO {
         List<DBObject> posts = null;
         // XXX HW 3.2,  Work Here
         // Return a list of DBObjects, each one a post from the posts collection
+
+        DBCursor cursor = postsCollection.find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).limit(limit);
+        try {
+            posts= new ArrayList<DBObject>();
+            while(cursor.hasNext()) {
+                posts.add(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
 
         return posts;
     }
@@ -78,7 +84,15 @@ public class BlogPostDAO {
         // - we created the permalink for you above.
 
         // Build the post object and insert it
+        post.append("author", username);
+        post.append("title", title);
+        post.append("body", body);
+        post.append("permalink", permalink);
+        post.append("tags", tags);
+        post.append("comments", new ArrayList<String>());
+        post.append("date", new Date());
 
+        postsCollection.insert(post);
 
         return permalink;
     }
@@ -105,8 +119,20 @@ public class BlogPostDAO {
         // - best solution uses an update command to the database and a suitable
         //   operator to append the comment on to any existing list of comments
 
+        BasicDBObject updateQuery = new BasicDBObject();
+        updateQuery.put("permalink", permalink);
 
+        BasicDBObject newPostComment = new BasicDBObject();
+        newPostComment.append("name", name);
+        if (email != null) {
+            newPostComment.append("email", email);
+        }
+        newPostComment.append("body", body);
 
+        BasicDBObject updateCommand = new BasicDBObject();
+        updateCommand.put("$push", new BasicDBObject("comments", newPostComment));
+
+        postsCollection.update(updateQuery, updateCommand, true, true);
     }
 
 
