@@ -123,7 +123,7 @@ public class BlogPostDAO {
         updateQuery.put("permalink", permalink);
 
         BasicDBObject newPostComment = new BasicDBObject();
-        newPostComment.append("name", name);
+        newPostComment.append("author", name);
         if (email != null) {
             newPostComment.append("email", email);
         }
