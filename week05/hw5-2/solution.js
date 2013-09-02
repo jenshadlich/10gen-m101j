@@ -3,7 +3,7 @@ db.zips.aggregate([
         {state:"CA"},
         {state:"NY"}
     ] }},
-    { $group:{ _id:{'city':"$city", 'state':"$state" }, 'pop':{$sum:"$pop"} } },
-    { $match:{ pop:{$gte:25000}}},
-    { $group:{ _id:"$city", 'avg_pop':{$avg:"$pop"} } }
+    { $group:{ _id:{ 'city':"$city", 'state':"$state" }, 'pop':{ $sum:"$pop" } } },
+    { $match:{ pop:{ $gte:25000 } } },
+    { $group:{ _id:"$city", 'avg_pop':{ $avg:"$pop" } } }
 ])
