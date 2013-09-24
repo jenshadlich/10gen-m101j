@@ -1,0 +1,4 @@
+use question7;
+db.images.find({"tags" : "sunrises"}).count();
+
+45044
